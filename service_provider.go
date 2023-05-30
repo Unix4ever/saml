@@ -149,7 +149,7 @@ func (sp *ServiceProvider) Metadata() *EntityDescriptor {
 	}
 
 	authnRequestsSigned := len(sp.SignatureMethod) > 0
-	wantAssertionsSigned := true
+	wantAssertionsSigned := sp.Certificate != nil
 	validUntil := TimeNow().Add(validDuration)
 
 	var keyDescriptors []KeyDescriptor

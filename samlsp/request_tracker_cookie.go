@@ -3,6 +3,7 @@ package samlsp
 import (
 	"encoding/base64"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -76,15 +77,18 @@ func (t CookieRequestTracker) GetTrackedRequests(r *http.Request) []TrackedReque
 	rv := []TrackedRequest{}
 	for _, cookie := range r.Cookies() {
 		if !strings.HasPrefix(cookie.Name, t.NamePrefix) {
+			log.Printf("SKIP: no prefix %s", cookie.Name)
 			continue
 		}
 
 		trackedRequest, err := t.Codec.Decode(cookie.Value)
 		if err != nil {
+			log.Printf("SKIP: failed to decode %s", cookie.Name)
 			continue
 		}
 		index := strings.TrimPrefix(cookie.Name, t.NamePrefix)
 		if index != trackedRequest.Index {
+			log.Printf("SKIP: index doesn't match %s, %s vs %s", cookie.Name, index, trackedRequest.Index)
 			continue
 		}
 
